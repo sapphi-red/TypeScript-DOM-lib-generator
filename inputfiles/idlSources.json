@@ -423,6 +423,10 @@
         "title": "Permissions"
     },
     {
+        "url": "https://w3c.github.io/picture-in-picture/",
+        "title": "Picture-in-Picture"
+    },
+    {
         "url": "https://www.w3.org/TR/pointerevents2/",
         "title": "Pointer Events"
     },

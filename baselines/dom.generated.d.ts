@@ -440,6 +440,10 @@ interface ElementDefinitionOptions {
     extends?: string;
 }
 
+interface EnterPictureInPictureEventInit extends EventInit {
+    pictureInPictureWindow: PictureInPictureWindow;
+}
+
 interface ErrorEventInit extends EventInit {
     colno?: number;
     error?: any;
@@ -4535,6 +4539,7 @@ interface Document extends Node, DocumentAndElementEventHandlers, DocumentOrShad
     onreadystatechange: ((this: Document, ev: Event) => any) | null;
     onvisibilitychange: ((this: Document, ev: Event) => any) | null;
     readonly ownerDocument: null;
+    readonly pictureInPictureEnabled: boolean;
     /**
      * Return an HTMLCollection of the embed elements in the Document.
      */
@@ -4639,6 +4644,7 @@ interface Document extends Node, DocumentAndElementEventHandlers, DocumentOrShad
     createEvent(eventInterface: "DeviceMotionEvent"): DeviceMotionEvent;
     createEvent(eventInterface: "DeviceOrientationEvent"): DeviceOrientationEvent;
     createEvent(eventInterface: "DragEvent"): DragEvent;
+    createEvent(eventInterface: "EnterPictureInPictureEvent"): EnterPictureInPictureEvent;
     createEvent(eventInterface: "ErrorEvent"): ErrorEvent;
     createEvent(eventInterface: "Event"): Event;
     createEvent(eventInterface: "Events"): Event;
@@ -4755,6 +4761,7 @@ interface Document extends Node, DocumentAndElementEventHandlers, DocumentOrShad
      * Stops document's fullscreen element from being displayed fullscreen and resolves promise when done.
      */
     exitFullscreen(): Promise<void>;
+    exitPictureInPicture(): Promise<void>;
     exitPointerLock(): void;
     getAnimations(): Animation[];
     /**
@@ -4889,6 +4896,7 @@ interface DocumentEvent {
     createEvent(eventInterface: "DeviceMotionEvent"): DeviceMotionEvent;
     createEvent(eventInterface: "DeviceOrientationEvent"): DeviceOrientationEvent;
     createEvent(eventInterface: "DragEvent"): DragEvent;
+    createEvent(eventInterface: "EnterPictureInPictureEvent"): EnterPictureInPictureEvent;
     createEvent(eventInterface: "ErrorEvent"): ErrorEvent;
     createEvent(eventInterface: "Event"): Event;
     createEvent(eventInterface: "Events"): Event;
@@ -4975,6 +4983,7 @@ interface DocumentOrShadowRoot {
      * Returns document's fullscreen element.
      */
     readonly fullscreenElement: Element | null;
+    readonly pictureInPictureElement: Element | null;
     readonly pointerLockElement: Element | null;
     /**
      * Retrieves a collection of styleSheet objects representing the style sheets that correspond to each instance of a link or style object in the document.
@@ -5238,6 +5247,15 @@ interface ElementContentEditable {
     inputMode: string;
     readonly isContentEditable: boolean;
 }
+
+interface EnterPictureInPictureEvent extends Event {
+    readonly pictureInPictureWindow: PictureInPictureWindow;
+}
+
+declare var EnterPictureInPictureEvent: {
+    prototype: EnterPictureInPictureEvent;
+    new(type: string, eventInitDict: EnterPictureInPictureEventInit): EnterPictureInPictureEvent;
+};
 
 /** Events providing information related to errors in scripts or in files. */
 interface ErrorEvent extends Event {
@@ -8957,12 +8975,21 @@ declare var HTMLUnknownElement: {
     new(): HTMLUnknownElement;
 };
 
+interface HTMLVideoElementEventMap extends HTMLMediaElementEventMap {
+    "enterpictureinpicture": Event;
+    "leavepictureinpicture": Event;
+}
+
 /** Provides special properties and methods for manipulating video objects. It also inherits properties and methods of HTMLMediaElement and HTMLElement. */
 interface HTMLVideoElement extends HTMLMediaElement {
+    autoPictureInPicture: boolean;
+    disablePictureInPicture: boolean;
     /**
      * Gets or sets the height of the video element.
      */
     height: number;
+    onenterpictureinpicture: ((this: HTMLVideoElement, ev: Event) => any) | null;
+    onleavepictureinpicture: ((this: HTMLVideoElement, ev: Event) => any) | null;
     /**
      * Gets or sets the playsinline of the video element. for example, On iPhone, video elements will now be allowed to play inline, and will not automatically enter fullscreen mode when playback begins.
      */
@@ -8984,9 +9011,10 @@ interface HTMLVideoElement extends HTMLMediaElement {
      */
     width: number;
     getVideoPlaybackQuality(): VideoPlaybackQuality;
-    addEventListener<K extends keyof HTMLMediaElementEventMap>(type: K, listener: (this: HTMLVideoElement, ev: HTMLMediaElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+    requestPictureInPicture(): Promise<PictureInPictureWindow>;
+    addEventListener<K extends keyof HTMLVideoElementEventMap>(type: K, listener: (this: HTMLVideoElement, ev: HTMLVideoElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
     addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-    removeEventListener<K extends keyof HTMLMediaElementEventMap>(type: K, listener: (this: HTMLVideoElement, ev: HTMLMediaElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+    removeEventListener<K extends keyof HTMLVideoElementEventMap>(type: K, listener: (this: HTMLVideoElement, ev: HTMLVideoElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
     removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
 
@@ -11722,6 +11750,25 @@ interface Permissions {
 declare var Permissions: {
     prototype: Permissions;
     new(): Permissions;
+};
+
+interface PictureInPictureWindowEventMap {
+    "resize": UIEvent;
+}
+
+interface PictureInPictureWindow extends EventTarget {
+    readonly height: number;
+    onresize: ((this: PictureInPictureWindow, ev: UIEvent) => any) | null;
+    readonly width: number;
+    addEventListener<K extends keyof PictureInPictureWindowEventMap>(type: K, listener: (this: PictureInPictureWindow, ev: PictureInPictureWindowEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+    addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+    removeEventListener<K extends keyof PictureInPictureWindowEventMap>(type: K, listener: (this: PictureInPictureWindow, ev: PictureInPictureWindowEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+    removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+}
+
+declare var PictureInPictureWindow: {
+    prototype: PictureInPictureWindow;
+    new(): PictureInPictureWindow;
 };
 
 /** Provides information about a browser plugin. */
